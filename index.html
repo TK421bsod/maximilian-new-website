@@ -37,6 +37,11 @@
         #header{
             font-weight:400;
         }
+
+        #theme-notif{
+            transition: width 0.5s ease-out, padding 1s ease-in-out, margin 1s ease-in-out, opacity .3s linear;
+            overflow:hidden;
+        }
     </style>
 </head>
 <body>
@@ -126,15 +131,16 @@
             <p class="feature-desc">Easy setup, an easy-to-use extension API, and a modular design make Maximilian the most customizable Discord bot out there.</p>
         </div>
     </div>
-    <div class="toast align-items-center fixed-center mx-auto" style="transition: margin 1.2s ease-in-out, opacity .3s linear;" role="alert" aria-live="assertive" aria-atomic="true" id="theme-notif">
-        <div class="d-flex">
+    <div class="toast align-items-center fixed-center mx-auto" role="alert" aria-live="assertive" aria-atomic="true" id="theme-notif" data-bs-autohide="false" style="width: 425px;">
+        <div class="d-flex" id="theme-notif-main" style="">
             <div class="toast-body" id="theme-set" style="color:black">
                  <div class="toast-subsection text-muted" style="font-size:8pt">
                     Use the button at the bottom to change the theme later.
                 </div>   
             </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" style="padding-right: 0; transition: opacity 0.5s ease, transform 0.5s ease; transform: scale(0.01, 0.01); left: 420px; top:35%; position:absolute;" id="theme-notif-close"></button>
+        </div>
     </div>
-</div>
     </div>
     <footer class="footer text-center" style="color:#898f9c">Made with ♥️ by tk421 (<a style="color:#898f9c" href="https://github.com/tk421bsod" target="_blank">TK421bsod</a> on GitHub)  <button class="btn btn-outline-light" style="overflow:hidden;" id="theme-button"><p id="theme-toggle"></p></button></footer>
 <script>
@@ -169,22 +175,80 @@ function applyDarkStyling(){
 }
 
 function addCloseButton(){
-    Function.prototype() //noop
+    try{
+        if (added){
+            return
+        }
+    } catch(error){
+        added = true
+    }
+    console.log("adding close button")
+    document.getElementById('theme-notif-close').style.transform = "scale(1, 1)";
+    document.getElementById('theme-notif').style.width = "445px";
+    added = true
+}
+
+function removeCloseButton(){
+    if (! added){
+        return
+    }
+    console.log("removing close button")
+    document.getElementById('theme-notif-close').style.transform = "scale(0.01, 0.01)";
+    document.getElementById('theme-notif').style.width = "425px";
+    added = false
+}
+
+function getNotifRef(name){
+    return bootstrap.Toast.getOrCreateInstance(document.getElementById(name))
+}
+
+function hideThemeNotif(){
+    if (held){
+        console.log("Attempted to hide theme notif when it was held!")
+        return
+    }
+    console.log("Hiding theme notif")
+    document.getElementById("theme-notif").style.marginBottom = "1.5%";
+    setTimeout(getNotifRef('theme-notif').hide(), 500);
 }
 
 function holdNotif(){
-    bootstrap.Toast.getOrCreateInstance(document.getElementById("theme-notif"));
-    //todo - maybe store date/time, updatenotifEndAnimDelay accordingly, and cancel/edit timeout???
+    if (held){
+        console.log("Notif already held!")
+        return //event handler may have gone off twice
+    }
+    console.log('Holding notif')
+    let themeNotifRef = getNotifRef('theme-notif');
+    clearTimeout(notifEndAnim);
+    held = true
+}
+
+function releaseNotif(){
+    if (! held){
+        return
+    }
+    console.log("Releasing notif, hiding after " + String(notifEndAnimDelay) + "ms")
+    held = false;
+    notifEndAnim = setTimeout(hideThemeNotif, notifEndAnimDelay);
 }
 
 function showThemeNotif(theme){
+    console.log("Showing notif")
     notifEndAnimDelay = 5400
+    held = false
+    let themeNotif = document.getElementById("theme-notif")
     document.getElementById("theme-set").innerHTML = "Automatically enabled <b> " + theme + " theme</b> based on your system theme." + document.getElementById("theme-set").innerHTML;
-    document.getElementById("theme-notif").addEventListener("mouseover", addCloseButton);
-    document.getElementById("theme-notif").addEventListener("mouseover", holdNotif)
-    bootstrap.Toast.getOrCreateInstance(document.getElementById("theme-notif")).show();
+    themeNotif.addEventListener("mouseover", addCloseButton);
+    themeNotif.addEventListener("mouseover", holdNotif);
+    themeNotif.addEventListener("mouseout", removeCloseButton);
+    themeNotif.addEventListener("mouseout", releaseNotif);
+    themeNotif.addEventListener("focusin", addCloseButton);
+    themeNotif.addEventListener("focusin", holdNotif);
+    themeNotif.addEventListener("focusout", removeCloseButton);
+    themeNotif.addEventListener("focusout", releaseNotif);
+    getNotifRef('theme-notif').show();
     setTimeout(function(){document.getElementById("theme-notif").style.marginBottom = "1%";}, 500)
-    setTimeout(function(){document.getElementById("theme-notif").style.marginBottom = "1.5%";}, notifEndAnimDelay)
+    notifEndAnim = setTimeout(hideThemeNotif, notifEndAnimDelay)
 }
 
 function initTheming(){
