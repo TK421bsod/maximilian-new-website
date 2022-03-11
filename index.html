@@ -238,14 +238,21 @@ function showThemeNotif(theme){
     held = false
     let themeNotif = document.getElementById("theme-notif")
     document.getElementById("theme-set").innerHTML = "Automatically enabled <b> " + theme + " theme</b> based on your system theme." + document.getElementById("theme-set").innerHTML;
+    //mouse events
     themeNotif.addEventListener("mouseover", addCloseButton);
     themeNotif.addEventListener("mouseover", holdNotif);
     themeNotif.addEventListener("mouseout", removeCloseButton);
     themeNotif.addEventListener("mouseout", releaseNotif);
+    //focus events e.g tab key
     themeNotif.addEventListener("focusin", addCloseButton);
     themeNotif.addEventListener("focusin", holdNotif);
     themeNotif.addEventListener("focusout", removeCloseButton);
     themeNotif.addEventListener("focusout", releaseNotif);
+    //touch events
+    themeNotif.addEventListener("touchstart", addCloseButton);
+    themeNotif.addEventListener("touchstart", holdNotif);
+    themeNotif.addEventListener("touchend", removeCloseButton);
+    themeNotif.addEventListener("touchend", releaseNotif);
     getNotifRef('theme-notif').show();
     setTimeout(function(){document.getElementById("theme-notif").style.marginBottom = "1%";}, 500)
     notifEndAnim = setTimeout(hideThemeNotif, notifEndAnimDelay)
