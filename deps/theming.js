@@ -19,6 +19,7 @@ function getCurrentTheme(){
     }
     if (cookies['theme']){
         source = "cookie"
+        console.log("cookie is set, setting theme to " + cookies['theme'])
         return cookies['theme'] == "dark" //no cookie set? check system theme
     }
     console.log("cookie not set!")
@@ -43,7 +44,7 @@ function applyDarkStyling(){
     document.body.style.color = "white"; document.body.style.backgroundColor = "#36393f"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-dark', 'btn-outline-light')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-dark', 'link-light')}; document.getElementById('navbar').className = document.getElementById('navbar').className.replace("navbar-light", "navbar-dark"); document.getElementById('navbar').style.backgroundColor = "#36393f"
 }
 
-function addCloseButton(){
+function addCloseButton(name){
     try{
         if (added){
             return
@@ -52,18 +53,18 @@ function addCloseButton(){
         added = true
     }
     console.log("adding close button")
-    document.getElementById('theme-notif-close').style.transform = "scale(1, 1)";
-    document.getElementById('theme-notif').style.width = "445px";
+    document.getElementById(name+'-close').style.transform = "scale(1, 1)";
+    document.getElementById(name).style.width = "445px";
     added = true
 }
 
-function removeCloseButton(){
+function removeCloseButton(name){
     if (! added){
         return
     }
     console.log("removing close button")
-    document.getElementById('theme-notif-close').style.transform = "scale(0.01, 0.01)";
-    document.getElementById('theme-notif').style.width = "425px";
+    document.getElementById(name+'-close').style.transform = "scale(0.01, 0.01)";
+    document.getElementById(name).style.width = "425px";
     added = false
 }
 
@@ -71,14 +72,14 @@ function getNotifRef(name){
     return bootstrap.Toast.getOrCreateInstance(document.getElementById(name))
 }
 
-function hideThemeNotif(){
+function hideNotif(name){
     if (held){
-        console.log("Attempted to hide theme notif when it was held!")
+        console.log("Attempted to hide notif when it was held!")
         return
     }
-    console.log("Hiding theme notif")
-    document.getElementById("theme-notif").style.marginBottom = "1.5%";
-    setTimeout(getNotifRef('theme-notif').hide(), 500);
+    console.log("Hiding notif")
+    document.getElementById(name).style.marginBottom = "1.5%";
+    setTimeout(getNotifRef(name).hide(), 700);
 }
 
 function holdNotif(){
@@ -87,48 +88,59 @@ function holdNotif(){
         return //event handler may have gone off twice
     }
     console.log('Holding notif')
-    let themeNotifRef = getNotifRef('theme-notif');
     clearTimeout(notifEndAnim);
     held = true
 }
 
-function releaseNotif(){
+function releaseNotif(name){
     if (! held){
         return
     }
     console.log("Releasing notif, hiding after " + String(notifEndAnimDelay) + "ms")
     held = false;
-    notifEndAnim = setTimeout(hideThemeNotif, notifEndAnimDelay);
+    notifEndAnim = setTimeout(function(){hideNotif(name)}, notifEndAnimDelay);
+}
+
+function showNotif(name){
+    console.log("Showing notif '" + name + "'")
+    notifEndAnimDelay = 5400;
+    let notifRef = getNotifRef(name);
+    let notifElem = document.getElementById(name);
+    if (! notifElem || ! notifRef){
+        throw new Error('Invalid name passed to showNotif!')
+    }
+    //mouse events
+    notifElem.addEventListener("mouseover", function(){addCloseButton(name)});
+    notifElem.addEventListener("mouseover", holdNotif);
+    notifElem.addEventListener("mouseout", function(){removeCloseButton(name)});
+    notifElem.addEventListener("mouseout", function(){releaseNotif(name)});
+    //focus events e.g tab key
+    notifElem.addEventListener("focusin", function(){addCloseButton(name)});
+    notifElem.addEventListener("focusin", holdNotif);
+    notifElem.addEventListener("focusout", function(){removeCloseButton(name)});
+    notifElem.addEventListener("focusout", function(){releaseNotif(name)});
+    //touch events
+    notifElem.addEventListener("touchstart", function(){addCloseButton(name)});
+    notifElem.addEventListener("touchstart", holdNotif);
+    notifElem.addEventListener("touchend", function(){removeCloseButton(name)});
+    notifElem.addEventListener("touchend", function(){releaseNotif(name)});
+    notifRef.show();
+    setTimeout(function(){notifElem.style.marginBottom = "1%";}, 500);
 }
 
 function showThemeNotif(theme){
-    console.log("Showing notif")
+    console.log("Showing theme notif")
     notifEndAnimDelay = 5400
     held = false
     let themeNotif = document.getElementById("theme-notif")
     if (source == "system"){
         document.getElementById("theme-set").innerHTML = "Automatically enabled <b> " + theme + " theme</b> based on your system theme." + document.getElementById("theme-set").innerHTML;
     } else {
+        document.getElementById("theme-set").style.fontSize = ".85rem";
         document.getElementById("theme-set").innerHTML = "Automatically enabled <b> " + theme + " theme</b> based on your previous session." + document.getElementById("theme-set").innerHTML;
     }
-    //mouse events
-    themeNotif.addEventListener("mouseover", addCloseButton);
-    themeNotif.addEventListener("mouseover", holdNotif);
-    themeNotif.addEventListener("mouseout", removeCloseButton);
-    themeNotif.addEventListener("mouseout", releaseNotif);
-    //focus events e.g tab key
-    themeNotif.addEventListener("focusin", addCloseButton);
-    themeNotif.addEventListener("focusin", holdNotif);
-    themeNotif.addEventListener("focusout", removeCloseButton);
-    themeNotif.addEventListener("focusout", releaseNotif);
-    //touch events
-    themeNotif.addEventListener("touchstart", addCloseButton);
-    themeNotif.addEventListener("touchstart", holdNotif);
-    themeNotif.addEventListener("touchend", removeCloseButton);
-    themeNotif.addEventListener("touchend", releaseNotif);
-    getNotifRef('theme-notif').show();
-    setTimeout(function(){document.getElementById("theme-notif").style.marginBottom = "1%";}, 500)
-    notifEndAnim = setTimeout(hideThemeNotif, notifEndAnimDelay)
+    showNotif('theme-notif');
+    notifEndAnim = setTimeout(function(){hideNotif('theme-notif')}, notifEndAnimDelay);
 }
 
 function initTheming(){
