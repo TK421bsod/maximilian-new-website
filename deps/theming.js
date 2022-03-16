@@ -35,7 +35,7 @@ function getCurrentTheme(){
 function applyLightStyling(){
     console.log("switching to light theme")
     document.cookie = "theme=light"
-    document.body.style.color = "#36393f"; document.body.style.backgroundColor = "white"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-light', 'btn-outline-dark')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-light', 'link-dark')}; document.getElementById('navbar').className = document.getElementById('navbar').className.replace("navbar-dark", "navbar-light"); document.getElementById('navbar').style.backgroundColor = "white";
+    document.body.style.color = "#36393f"; document.body.style.backgroundColor = "white"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-light', 'btn-outline-dark')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-light', 'link-dark')}; document.getElementById('navbar').className = document.getElementById('navbar').className.replace("navbar-dark", "navbar-light"); document.getElementById('navbar').style.backgroundColor = "white"; for (const each of document.getElementsByTagName('li')){each.style.backgroundColor="white"; each.style.color="#36393f";}; for (const each of document.getElementsByTagName('ul')){each.style.backgroundColor="white"; each.style.color="#36393f";}; for (const each of document.getElementsByTagName('p')){each.style.backgroundColor="white"; each.style.color="#36393f";}
 }
 
 function applyDarkStyling(){
@@ -192,8 +192,7 @@ if(window.location.href.includes('#main-content')){
     setTimeout(function(){window.scrollTo(0,0);}, 50);
 }
 
-document.body.style.opacity = 0;
-document.body.style.backgroundColor = "white";
+window.addEventListener("domContentLoaded", function(){document.body.style.opacity = 0;document.body.style.backgroundColor = "white";})
 window.onload = function(){
     initTheming()
     document.getElementById('theme-button').addEventListener("click", toggleTheme);
