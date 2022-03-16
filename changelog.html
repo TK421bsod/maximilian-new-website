@@ -12,8 +12,10 @@
     <link href="./deps/bootstrap.min.css" rel="stylesheet">
     <!-- TODO: selfhost this -->
     <!-- probably should limit the icon set as we only need like 2 icons -->
-    <script async src="./deps/fa.js"></script>
+    <script defer src="./deps/fa/solid.js"></script>
+    <script defer src="./deps/fa/fontawesome.js"></script>
     <script src="./deps/bootstrap.bundle.min.js"></script>
+    <script src="./deps/theming.js"></script>
     <style>
         body{
             background-color: #36393f;
@@ -27,6 +29,14 @@
         }
         .release-date{
             font-size: 9pt;
+        }
+
+        .fixed-center{
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1030;
         }
 
 	.commit-link{
@@ -54,18 +64,18 @@
         }
 
         .commit-link:hover, .commit-link:focus{
-            color:darkgrey
+            color: darkgrey !important;
         }
 
 	li:hover > .delay-1, li:focus > .delay-1, .delay-1:focus, li:focus-within > .delay-1{
             opacity:1;
             transform: translateX(0.9vw)
 	}
-
       
         li{
             border:none;
         }
+
         li:focus-within{
             border: 1px white solid;
             border-radius: 3px
@@ -81,16 +91,24 @@
             transform: translateX(3.5vw)
         }
 
+        #theme-notif{
+            transition: width 0.5s ease-out, padding 1s ease-in-out, margin 1s ease-in-out, opacity .3s linear;
+            overflow:hidden;
+        }
+
+        #navbar{
+            background-color: #36393f
+        }
     </style>
 </head>
-<body>
+<body style="">
     <nav class="navbar navbar-expand-sm navbar-dark sticky-top" style="background-color: #36393f;" id="navbar" role="navigation">
         <div class="container-fluid justify-content-left text-left">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-center text-center" id="navbarSupportedContent">
-                <ul class="navbar-nav w-100 nav-justified">
+                <ul class="navbar-nav w-100 nav-justified" id="navbar-links">
                     <li class="visually-hidden-focusable nav-item"><a href="#main-content" class="visually-hidden-focusable nav-link" onclick="setTimeout(function(){window.scrollTo(0,0)}, 50);">Skip to content</a></li>
                     <li class="nav-item"><a class="nav-link" href="./index.html">Home</a></li>
                     <li class="nav-item"><a id="active" class="nav-link active" href=".">Changelog</a></li>
@@ -191,12 +209,22 @@
         <br>
         <h3 class="pb-0 mb-0">pre-rewrite</h3>
         <p class="mt-0 release-date">before september 2020</p>
-        <div class="mx-auto" style="background-color:#36393f; max-width:40rem;">
-            <p>No releases are documented before this point. Maximilian was first brought online on 7 September 2019 and was completely rewritten from <a href="https://github.com/TK421bsod/maximilian/commit/a47f5d5a8eed1a5048704cd6c16d42217689be5a" target="_blank"><i class="fas fa-external-link-alt fa-sm"></i> 16 April 2020</a> to early September 2020.</p>
+        <div class="mx-auto" style="" max-width:40rem;">
+            <p>No releases are documented before this point. Maximilian was first brought online on 7 September 2019 and was completely rewritten from <a href="https://github.com/TK421bsod/maximilian/commit/a47f5d5a8eed1a5048704cd6c16d42217689be5a" target="_blank" class="link-light"><i class="fas fa-external-link-alt fa-sm"></i> 16 April 2020</a> to early September 2020.</p>
         </div>
         <br>
+        <div class="toast align-items-center fixed-center mx-auto" role="alert" aria-live="assertive" aria-atomic="true" id="theme-notif" data-bs-autohide="false" style="width: 425px;">
+            <div class="d-flex" id="theme-notif-main" style="">
+                <div class="toast-body" id="theme-set" style="color:black">
+                     <div class="toast-subsection text-muted" style="font-size:8pt">
+                        Use the button at the bottom to change the theme later.
+                     </div>
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" style="padding-right: 0; transition: opacity 0.5s ease, transform 0.5s ease; transform: scale(0.01, 0.01); left: 420px; top:35%; position:absolute;" id="theme-notif-close"></button>
+            </div>
+        </div>
     </div>
-    <footer class="footer text-center" style="color:#898f9c">Made with ♥️ by tk421 (<a style="color:#898f9c" href="https://github.com/tk421bsod" target="_blank">TK421bsod</a> on GitHub)</footer>
+    <footer class="footer text-center" style="color:#898f9c">Made with ♥️ by tk421 (<a style="color:#898f9c" href="https://github.com/tk421bsod" target="_blank">TK421bsod</a> on GitHub)    <button class="btn btn-outline-light" style="overflow:hidden;" id="theme-button"><p id="theme-toggle"></p></button></footer>
 <script>
 //sometimes the page will scroll a bit too far when using the 'Skip to content' link
 //this is an attempt to fix that
