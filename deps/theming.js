@@ -35,13 +35,13 @@ function getCurrentTheme(){
 function applyLightStyling(){
     console.log("switching to light theme")
     document.cookie = "theme=light"
-    document.body.style.color = "#36393f"; document.body.style.backgroundColor = "white"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-light', 'btn-outline-dark')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-light', 'link-dark')}; document.getElementById('navbar').className = document.getElementById('navbar').className.replace("navbar-dark", "navbar-light"); document.getElementById('navbar').style.backgroundColor = "white"; for (const each of document.getElementsByTagName('li')){each.style.backgroundColor="white"; each.style.color="#36393f";}; for (const each of document.getElementsByTagName('ul')){each.style.backgroundColor="white"; each.style.color="#36393f";}; for (const each of document.getElementsByTagName('p')){each.style.backgroundColor="white"; each.style.color="#36393f";}
+    document.body.style.color = "#36393f"; document.body.style.backgroundColor = "white"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-light', 'btn-outline-dark')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-light', 'link-dark')}; document.getElementById('navbar').className = document.getElementById('navbar').className.replace("navbar-dark", "navbar-light"); document.getElementById('navbar').style.backgroundColor = "white"; for (const each of document.getElementsByTagName('li')){if (each.className.includes("nav")){continue}; each.style.backgroundColor="white"; each.style.color="#36393f";}; for (const each of document.getElementsByTagName('ul')){if (each.className.includes("nav")){continue};each.style.backgroundColor="white"; each.style.color="#36393f";};if (document.getElementsByClassName("commit-link")){for (const link of document.getElementsByClassName("commit-link")){link.style.color = "#36393f"}}
 }
 
 function applyDarkStyling(){
     console.log("switching to dark theme")
     document.cookie = "theme=dark"
-    document.body.style.color = "white"; document.body.style.backgroundColor = "#36393f"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-dark', 'btn-outline-light')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-dark', 'link-light')}; document.getElementById('navbar').className = document.getElementById('navbar').className.replace("navbar-light", "navbar-dark"); document.getElementById('navbar').style.backgroundColor = "#36393f"
+    document.body.style.color = "white"; document.body.style.backgroundColor = "#36393f"; for (const each of document.getElementsByClassName('btn')){each.className = each.className.replace('btn-outline-dark', 'btn-outline-light')}; for (const each of document.getElementsByTagName('a')){each.className = each.className.replace('link-dark', 'link-light')}; document.getElementById('navbar').className = document.getElementById('navbar').className.replace("navbar-light", "navbar-dark"); document.getElementById('navbar').style.backgroundColor = "#36393f"; for (const each of document.getElementsByTagName('li')){if (each.className.includes("nav")){continue}; each.style.backgroundColor="#36393f"; each.style.color="white";}; for (const each of document.getElementsByTagName('ul')){if (each.className.includes("nav")){continue};each.style.backgroundColor="#36393f"; each.style.color="white";}; if (document.getElementsByClassName("commit-link")){for (const link of document.getElementsByClassName("commit-link")){link.style.color = "white"}}
 }
 
 function addCloseButton(name){
@@ -179,9 +179,22 @@ function initTheming(){
         themeToggle.title = "Switch to dark theme";
         themeToggle.style.marginBottom = "0";
     }
-    document.body.style.transition = "background-color 0.6s ease-in-out, color 0.6s ease-in-out, transform 0.6s ease-in-out";
-    document.querySelector('a').style.transition = "color .15s ease-in-out, background-color .6s ease-in-out, border-color .15s ease-in-out;";
-    document.getElementById('navbar').style.transition = "background-color 0.6s ease-in-out, color 0.6s ease-in-out";
+    if (typeof toggle !== 'undefined'){
+        document.body.style.transition = "background-color 0.6s ease-in-out, color 0.6s ease-in-out, transform 0.6s ease-in-out";
+        document.getElementById('navbar').style.transition = "background-color 0.6s ease-in-out, color 0.6s ease-in-out";
+        document.getElementById('navbar-links').style.transition = "background-color 0.6s ease-in-out, color 0.6s ease-in-out";
+        for (const each of document.getElementsByTagName("li")){
+            each.style.transition = "background-color 0.6s ease-in-out, color 0.6s ease-in-out";
+        }
+        for (const each of document.getElementsByTagName("ul")){
+            each.style.transition = "background-color 0.6s ease-in-out, color 0.6s ease-in-out";
+        }
+        for (const each of document.getElementsByClassName("a")){
+            if (each.className.startsWith("link-")){
+                each.style.transition = "background-color 0.6s ease-in-out, color 0.6s ease-in-out";
+            }
+        }
+    }
 }
 
 //todo: remove this??
