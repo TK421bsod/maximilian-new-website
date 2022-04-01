@@ -138,6 +138,7 @@
             <!-- todo: tooltips for below, e.g 'autostarting database', 'setup.sh fix', 'setup.sh reset', 'common.py > db.py' -->
             <li tabindex="0">Major improvements to database handling</li>
             <li tabindex="0">Another restructuring of core code</li>
+            <li></li>
         </ul>
         <br>
         <h3 class="pb-0 mb-0">v0.6.0</h3>
@@ -219,6 +220,12 @@
                      </div>
                 </div>
                 <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" style="padding-right: 0; transition: opacity 0.5s ease, transform 0.5s ease; transform: scale(0.01, 0.01); left: 420px; top:35%; position:absolute;" id="theme-notif-close"></button>
+            </div>
+        </div>
+        <div class="toast align-items-center fixed-center mx-auto" role="alert" aria-live="assertive" aria-atomic="true" id="toggle-notif" data-bs-autohide="false" style="width: 179px; transition: width 0.5s ease-out, padding 1s ease-in-out, margin 0.8s ease-out, opacity .3s linear;">
+            <div class="d-flex" id="toggle-notif-main" style="">
+                <div class="toast-body" id="toggle-set" style="color:black">
+                </div>
             </div>
         </div>
     </div>

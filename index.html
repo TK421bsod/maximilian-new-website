@@ -39,8 +39,7 @@
             font-weight:400;
         }
 
-        #theme-notif{
-            transition: width 0.5s ease-out, padding 1s ease-in-out, margin 1s ease-in-out, opacity .3s linear;
+        #theme-notif, #toggle-notif{
             overflow:hidden;
         }
     </style>
@@ -132,7 +131,7 @@
             <p class="feature-desc">Easy setup, an easy-to-use extension API, and a modular design make Maximilian the most customizable Discord bot out there.</p>
         </div>
     </div>
-    <div class="toast align-items-center fixed-center mx-auto" role="alert" aria-live="assertive" aria-atomic="true" id="theme-notif" data-bs-autohide="false" style="width: 425px;">
+    <div class="toast align-items-center fixed-center mx-auto" role="alert" aria-live="assertive" aria-atomic="true" id="theme-notif" data-bs-autohide="false" style="width: 425px; transition: width 0.5s ease-out, padding 1s ease-in-out, margin 1.75s ease-out, opacity .3s linear;">
         <div class="d-flex" id="theme-notif-main" style="">
             <div class="toast-body" id="theme-set" style="color:black">
                  <div class="toast-subsection text-muted" style="font-size:8pt">
@@ -142,7 +141,14 @@
             <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" style="padding-right: 0; transition: opacity 0.5s ease, transform 0.5s ease; transform: scale(0.01, 0.01); left: 420px; top:35%; position:absolute;" id="theme-notif-close"></button>
         </div>
     </div>
+    <div class="toast align-items-center fixed-center mx-auto" role="alert" aria-live="assertive" aria-atomic="true" id="toggle-notif" data-bs-autohide="false" style="width: 179px; transition: width 0.5s ease-out, padding 1s ease-in-out, margin 0.8s ease-out, opacity .3s linear;">
+        <div class="d-flex" id="toggle-notif-main" style="">
+            <div class="toast-body" id="toggle-set" style="color:black">
+            </div>
+        </div>
+    </div>
     </div>
     <footer class="footer text-center" style="color:#898f9c">Made with ♥️ by tk421 (<a style="color:#898f9c" href="https://github.com/tk421bsod" target="_blank">TK421bsod</a> on GitHub)  <button class="btn btn-outline-light" style="overflow:hidden;" id="theme-button"><p id="theme-toggle"></p></button></footer>
 </body>
 </html>
+
