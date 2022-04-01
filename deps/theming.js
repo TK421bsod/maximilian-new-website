@@ -1,13 +1,19 @@
+themes = {true:'dark', false:'light'}
+activeNotifs = {}
+
 function getCookies(){
-    for (const cookie of document.cookie.split(";")){
-        let intermediate=cookie.split("=");
-        cookies[intermediate[0]]=intermediate[1];
-    }
+    document.cookie.split(";").forEach(function(cookie){let intermediate=cookie.split("=");cookies[intermediate[0]]=intermediate[1];});
+}
+
+function showToggleNotif(){
+    document.getElementById('toggle-set').innerHTML = "Switched to <b>"+ themes[toggle] + " theme</b>."
+    showNotif('toggle-notif', false, 2300)
 }
 
 function toggleTheme(){
     toggle = ! getCurrentTheme();
     initTheming();
+    showToggleNotif();
 }
 
 function getCurrentTheme(){
@@ -69,6 +75,12 @@ function removeCloseButton(name){
 }
 
 function getNotifRef(name){
+    //TODO: sometimes this method returns a new instance even though the previous instance REFERRING TO THE ELEMENT OF THE SAME NAME is showing on the page
+    //this causes issues with hideNotif and appears when trying to create a second notif e.g toggle notif
+    //maybe create a global object that stores refs and is updated with new ref on next initTheming call?
+    //idk something like activeNotifs
+    //ooh this would also be useful for managing state of multiple notifs simultaneously... but what if someone spams the theme toggle
+    //maybe don't do anything if a ref already exists? maybe hold the current notif? maybe somehow create a new one?
     return bootstrap.Toast.getOrCreateInstance(document.getElementById(name))
 }
 
@@ -77,9 +89,11 @@ function hideNotif(name){
         console.log("Attempted to hide notif when it was held!")
         return
     }
-    console.log("Hiding notif")
+    console.log("Hiding notif '" + name + "'")
     document.getElementById(name).style.marginBottom = "1.5%";
-    setTimeout(getNotifRef(name).hide(), 700);
+    setTimeout(activeNotifs[name].hide(), 700);
+    console.log("hid notif");
+    document.getElementById(name).style.marginBottom = "0%";
 }
 
 function holdNotif(){
@@ -101,36 +115,45 @@ function releaseNotif(name){
     notifEndAnim = setTimeout(function(){hideNotif(name)}, notifEndAnimDelay);
 }
 
-function showNotif(name){
+function showNotif(name, closable, delay){
+    if (! activeNotifs[name]){
+        activeNotifs[name] = getNotifRef(name)
+    }
     console.log("Showing notif '" + name + "'")
-    notifEndAnimDelay = 5400;
-    let notifRef = getNotifRef(name);
+    if (! delay){
+        notifEndAnimDelay = 5400;
+    } else {
+        notifEndAnimDelay = delay;
+    }
+    let notifRef = activeNotifs[name];
     let notifElem = document.getElementById(name);
     if (! notifElem || ! notifRef){
         throw new Error('Invalid name passed to showNotif!')
     }
-    //mouse events
-    notifElem.addEventListener("mouseover", function(){addCloseButton(name)});
-    notifElem.addEventListener("mouseover", holdNotif);
-    notifElem.addEventListener("mouseout", function(){removeCloseButton(name)});
-    notifElem.addEventListener("mouseout", function(){releaseNotif(name)});
-    //focus events e.g tab key
-    notifElem.addEventListener("focusin", function(){addCloseButton(name)});
-    notifElem.addEventListener("focusin", holdNotif);
-    notifElem.addEventListener("focusout", function(){removeCloseButton(name)});
-    notifElem.addEventListener("focusout", function(){releaseNotif(name)});
-    //touch events
-    notifElem.addEventListener("touchstart", function(){addCloseButton(name)});
-    notifElem.addEventListener("touchstart", holdNotif);
-    notifElem.addEventListener("touchend", function(){removeCloseButton(name)});
-    notifElem.addEventListener("touchend", function(){releaseNotif(name)});
+    if (closable){
+        //mouse events
+        notifElem.addEventListener("mouseover", function(){addCloseButton(name)});
+        notifElem.addEventListener("mouseover", holdNotif);
+        notifElem.addEventListener("mouseout", function(){removeCloseButton(name)});
+        notifElem.addEventListener("mouseout", function(){releaseNotif(name)});
+        //focus events e.g tab key
+        notifElem.addEventListener("focusin", function(){addCloseButton(name)});
+        notifElem.addEventListener("focusin", holdNotif);
+        notifElem.addEventListener("focusout", function(){removeCloseButton(name)});
+        notifElem.addEventListener("focusout", function(){releaseNotif(name)});
+        //touch events
+        notifElem.addEventListener("touchstart", function(){addCloseButton(name)});
+        notifElem.addEventListener("touchstart", holdNotif);
+        notifElem.addEventListener("touchend", function(){removeCloseButton(name)});
+        notifElem.addEventListener("touchend", function(){releaseNotif(name)});
+    }
     notifRef.show();
     setTimeout(function(){notifElem.style.marginBottom = "1%";}, 500);
+    notifEndAnim = setTimeout(function(){hideNotif(name)}, notifEndAnimDelay);
 }
 
 function showThemeNotif(theme){
     console.log("Showing theme notif")
-    notifEndAnimDelay = 5400
     held = false
     let themeNotif = document.getElementById("theme-notif")
     if (source == "system"){
@@ -139,8 +162,7 @@ function showThemeNotif(theme){
         document.getElementById("theme-set").style.fontSize = ".85rem";
         document.getElementById("theme-set").innerHTML = "Automatically enabled <b> " + theme + " theme</b> based on your previous session." + document.getElementById("theme-set").innerHTML;
     }
-    showNotif('theme-notif');
-    notifEndAnim = setTimeout(function(){hideNotif('theme-notif')}, notifEndAnimDelay);
+    showNotif('theme-notif', true);
 }
 
 function initTheming(){
@@ -205,8 +227,9 @@ if(window.location.href.includes('#main-content')){
     setTimeout(function(){window.scrollTo(0,0);}, 50);
 }
 
-window.addEventListener("domContentLoaded", function(){document.body.style.opacity = 0;document.body.style.backgroundColor = "white";})
+window.addEventListener("DOMContentLoaded", function(){console.log("changing opacity`");document.body.style.opacity = 0;document.body.style.backgroundColor = "white";})
 window.onload = function(){
     initTheming()
     document.getElementById('theme-button').addEventListener("click", toggleTheme);
 }
+ 
